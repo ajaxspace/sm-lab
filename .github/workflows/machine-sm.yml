@@ -42,10 +42,11 @@ jobs:
           CHECKS_GH_TOKEN: ${{ github.token }}
           SILENT_GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          DRY: ${{ inputs.dryRun || 'false' }}
         run: |
           cd agents
-          OVERRIDE=$(cat <<J
-          {"params":{"jobParams":{"repo":"${{ github.repository }}","dryRun":${{ inputs.dryRun || 'false' }},"machineAuthor":"ajaxspace","ciWorkflow":"ci.yml","validationChecks":"[\"lab-validation\"]","silentToken":"${{ github.token }}","checksToken":"${{ github.token }}"}}}
-          J
-          )
+          OVERRIDE=$(jq -n --arg repo "$GH_REPO" --arg tok "$SILENT_GH_TOKEN" --argjson dry "$DRY" \
+            '{params:{jobParams:{repo:$repo, dryRun:$dry, machineAuthor:"ajaxspace",
+             ciWorkflow:"ci.yml", validationChecks:"[\"lab-validation\"]",
+             silentToken:$tok, checksToken:$tok}}}')
           dmtools run sm_github.json "$OVERRIDE"
