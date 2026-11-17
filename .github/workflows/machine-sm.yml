@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: IstiN/dmtools-agents
-          ref: fix/io-cache-tl
+          ref: fix/io-cache-ttl
           path: agents
       - name: Install dmtools CLI
         run: |
