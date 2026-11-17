@@ -36,6 +36,7 @@ jobs:
             "https://github.com/epam/dmtools-dart/releases/download/v0.1.103/install.sh" \
             -o /tmp/dmtools-install.sh
           DMTOOLS_GITHUB_TOKEN=${{ github.token }} bash /tmp/dmtools-install.sh v0.1.103
+          echo "$HOME/.dmtools/bin" >> "$GITHUB_PATH"
       - name: Reconcile the machine loop
         env:
           SOURCE_GITHUB_TOKEN: ${{ github.token }}
