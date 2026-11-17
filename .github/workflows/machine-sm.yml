@@ -1,0 +1,51 @@
+# SM kicker stub (lab shape): reconciles THIS repo from the patched pack
+# branch — thin wrapper, no awf factory involved.
+name: 'Machine SM (lab)'
+run-name: '🧹 SM tick ${{ github.event_name }}'
+on:
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: 'Log the plan, perform no action'
+        required: false
+        type: boolean
+        default: false
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: write
+  actions: write
+jobs:
+  sm:
+    runs-on: ubuntu-slim
+    concurrency:
+      group: machine-sm
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout pack (fix branch)
+        uses: actions/checkout@v4
+        with:
+          repository: IstiN/dmtools-agents
+          ref: fix/io-cache-tl
+          path: agents
+      - name: Install dmtools CLI
+        run: |
+          curl -fsSL --connect-timeout 15 --max-time 45 \
+            "https://github.com/epam/dmtools-dart/releases/download/v0.1.103/install.sh" \
+            -o /tmp/dmtools-install.sh
+          DMTOOLS_GITHUB_TOKEN=${{ github.token }} bash /tmp/dmtools-install.sh v0.1.103
+      - name: Reconcile the machine loop
+        env:
+          SOURCE_GITHUB_TOKEN: ${{ github.token }}
+          CHECKS_GH_TOKEN: ${{ github.token }}
+          SILENT_GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cd agents
+          OVERRIDE=$(cat <<J
+          {"params":{"jobParams":{"repo":"${{ github.repository }}","dryRun":${{ inputs.dryRun || 'false' }},"machineAuthor":"ajaxspace","ciWorkflow":"ci.yml","validationChecks":"[\"lab-validation\"]","silentToken":"${{ github.token }}","checksToken":"${{ github.token }}"}}}
+          J
+          )
+          dmtools run sm_github.json "$OVERRIDE"

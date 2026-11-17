@@ -1,0 +1,11 @@
+# Dispatch-only validation target for the SM tick (no push trigger —
+# silent pushes must fire nothing, same contract as the fa deployment).
+name: CI
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  green:
+    runs-on: ubuntu-slim
+    steps:
+      - run: echo "lab validation — green"
