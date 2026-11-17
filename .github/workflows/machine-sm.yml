@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: IstiN/dmtools-agents
-          ref: fix/io-cache-tl
+          ref: fix/io-cache-ttl
           path: agents
       - name: Install dmtools CLI
         run: |
@@ -36,8 +36,10 @@ jobs:
             "https://github.com/epam/dmtools-dart/releases/download/v0.1.103/install.sh" \
             -o /tmp/dmtools-install.sh
           DMTOOLS_GITHUB_TOKEN=${{ github.token }} bash /tmp/dmtools-install.sh v0.1.103
+          echo "$HOME/.dmtools/bin" >> "$GITHUB_PATH"
       - name: Reconcile the machine loop
         env:
+          GH_TOKEN: ${{ github.token }}
           SOURCE_GITHUB_TOKEN: ${{ github.token }}
           CHECKS_GH_TOKEN: ${{ github.token }}
           SILENT_GH_TOKEN: ${{ github.token }}
