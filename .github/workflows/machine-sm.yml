@@ -39,6 +39,7 @@ jobs:
           echo "$HOME/.dmtools/bin" >> "$GITHUB_PATH"
       - name: Reconcile the machine loop
         env:
+          GH_TOKEN: ${{ github.token }}
           SOURCE_GITHUB_TOKEN: ${{ github.token }}
           CHECKS_GH_TOKEN: ${{ github.token }}
           SILENT_GH_TOKEN: ${{ github.token }}
